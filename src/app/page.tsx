@@ -28,7 +28,7 @@ export default function Home() {
       });
   }, []);
   useEffect(() => {
-    let socketE = io("http://localhost:3000");
+    let socketE = io("https://omegle-clone-back-end.onrender.com");
     socketE.on("get-id", (id) => {
       var peer = new Peer(`${id}`);
       peer.on("call", function (call) {
