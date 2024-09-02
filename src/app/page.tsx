@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import Peer from "peerjs";
 import Image from "next/image";
-import img from "./assets/images.jpeg"
+import img from "./assets/images.webp"
 // CommonJS
 export default function Home() {
   const [socket, setSocket] = useState<any>();
