@@ -27,10 +27,8 @@ export default function Home() {
         }
       });
   }, []);
-
-  // https://omegle-clone-back-end.onrender.com
   useEffect(() => {
-    let socketE = io("wss://wandering-tarry-lock.glitch.me");
+    let socketE = io("https://omegle-clone-back-end.onrender.com");
     socketE.on("get-id", (id) => {
       var peer = new Peer(`${id}`);
       peer.on("call", function (call) {
@@ -60,7 +58,7 @@ export default function Home() {
 
       {
         otherId ?
-      <div id="vid" className="w-full h-[90vh]">
+      <div id="vid" className="w-full h-[95vh]">
         <video
           ref={callVid}
           
@@ -68,17 +66,19 @@ export default function Home() {
           autoPlay
           className="w-full h-[100%] bg-black"
         ></video>
-          </div> : < Image className="w-full h-[90vh]" src={img} width={100} alt = "dd"/>
+          </div> : < Image className="w-full h-[95vh]" src={img} width={100} alt = "dd"/>
       }
       <button
         className="w-full text-center bg-orange-600 h-[5vh]"
         onClick={() => {
-          console.log('fcddd');
+          console.log("dsxswx");
           
           socket.emit("cancel", otherId);
           setOtherId(null)
           socket.emit("search");
           socket.on("found", (id: any, myId: any) => {
+          console.log("ccx");
+
             setOtherId(id);
             var call = peer!.call(id, stream!);
 
