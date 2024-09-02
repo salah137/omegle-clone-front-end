@@ -30,7 +30,7 @@ export default function Home() {
 
   // https://omegle-clone-back-end.onrender.com
   useEffect(() => {
-    let socketE = io("https://omegle-clone-back-end.onrender.com");
+    let socketE = io("wss://wandering-tarry-lock.glitch.me");
     socketE.on("get-id", (id) => {
       var peer = new Peer(`${id}`);
       peer.on("call", function (call) {
