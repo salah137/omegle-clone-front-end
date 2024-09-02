@@ -27,6 +27,8 @@ export default function Home() {
         }
       });
   }, []);
+
+  // https://omegle-clone-back-end.onrender.com
   useEffect(() => {
     let socketE = io("https://omegle-clone-back-end.onrender.com");
     socketE.on("get-id", (id) => {
@@ -61,7 +63,7 @@ export default function Home() {
       <div id="vid" className="w-full h-[90vh]">
         <video
           ref={callVid}
-          
+          muted
           playsInline
           autoPlay
           className="w-full h-[100%] bg-black"
@@ -71,6 +73,7 @@ export default function Home() {
       <button
         className="w-full text-center bg-orange-600 h-[5vh]"
         onClick={() => {
+          console.log('fcddd');
           
           socket.emit("cancel", otherId);
           setOtherId(null)
