@@ -69,7 +69,7 @@ export default function Home() {
           </div> : < Image className="w-full h-[90vh]" src={img} width={100} alt = "dd"/>
       }
       <button
-        className="w-full text-center bg-orange-600 h-[10vh]"
+        className="w-full text-center bg-orange-600 h-[5vh]"
         onClick={() => {
           
           socket.emit("cancel", otherId);
