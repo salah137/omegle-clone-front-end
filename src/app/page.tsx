@@ -21,15 +21,20 @@ export default function Home() {
         audio: true,
       })
       .then((o) => {
+        console.log(("dds"));
+
         setStream(o);
         if (videoRef.current) {
-          videoRef.current.srcObject = o;
+          console.log(("dds"));
+          
+          videoRef.current.srcObject = o; 
         }
       });
   }, []);
+
   useEffect(() => {
     let socketE = io("https://omegle-clone-back-end.onrender.com", {
-      transports: ['websocket', 'polling'],  // Enable both WebSocket and polling
+        // Enable both WebSocket and polling
     });
     socketE.on("get-id", (id) => {
       var peer = new Peer(`${id}`);
@@ -51,7 +56,7 @@ export default function Home() {
       <div id="vid" className="border-white border-solid " >
         <video
           ref={videoRef}
-    muted
+          muted
           playsInline
           autoPlay
           className="w-[20vh] h-[30vh] bg-black absolute right-0 "
@@ -63,7 +68,7 @@ export default function Home() {
           <div id="vid" className="w-full h-[95vh]">
             <video
               ref={callVid}
-              
+
               playsInline
               autoPlay
               className="w-full h-[100%] bg-black"
@@ -73,11 +78,14 @@ export default function Home() {
       <button
         className="w-full text-center bg-orange-600 h-[5vh]"
         onClick={() => {
+      
+
           console.log("dsxswx");
 
           socket.emit("cancel", otherId);
-          setOtherId(null)
+          setOtherId(null);
           socket.emit("search");
+
           socket.on("found", (id: any, myId: any) => {
             console.log("ccx");
 
@@ -93,7 +101,6 @@ export default function Home() {
                 callVid.current.srcObject = othstream;
               }
             });
-
           });
         }}
       >
