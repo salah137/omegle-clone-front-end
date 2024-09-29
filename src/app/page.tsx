@@ -28,7 +28,9 @@ export default function Home() {
       });
   }, []);
   useEffect(() => {
-    let socketE = io("https://omegle-clone-back-end.onrender.com");
+    let socketE = io("https://omegle-clone-back-end.onrender.com", {
+      transports: ['websocket', 'polling'],  // Enable both WebSocket and polling
+    });
     socketE.on("get-id", (id) => {
       var peer = new Peer(`${id}`);
       peer.on("call", function (call) {
@@ -49,7 +51,7 @@ export default function Home() {
       <div id="vid" className="border-white border-solid " >
         <video
           ref={videoRef}
-          muted
+
           playsInline
           autoPlay
           className="w-[20vh] h-[30vh] bg-black absolute right-0 "
@@ -58,26 +60,26 @@ export default function Home() {
 
       {
         otherId ?
-      <div id="vid" className="w-full h-[95vh]">
-        <video
-          ref={callVid}
-          
-          playsInline
-          autoPlay
-          className="w-full h-[100%] bg-black"
-        ></video>
-          </div> : < Image className="w-full h-[95vh]" src={img} width={100} alt = "dd"/>
+          <div id="vid" className="w-full h-[95vh]">
+            <video
+              ref={callVid}
+              
+              playsInline
+              autoPlay
+              className="w-full h-[100%] bg-black"
+            ></video>
+          </div> : < Image className="w-full h-[95vh]" src={img} width={100} alt="dd" />
       }
       <button
         className="w-full text-center bg-orange-600 h-[5vh]"
         onClick={() => {
           console.log("dsxswx");
-          
+
           socket.emit("cancel", otherId);
           setOtherId(null)
           socket.emit("search");
           socket.on("found", (id: any, myId: any) => {
-          console.log("ccx");
+            console.log("ccx");
 
             setOtherId(id);
             var call = peer!.call(id, stream!);
@@ -91,7 +93,7 @@ export default function Home() {
                 callVid.current.srcObject = othstream;
               }
             });
-            
+
           });
         }}
       >
