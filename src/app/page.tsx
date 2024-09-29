@@ -51,7 +51,7 @@ export default function Home() {
       <div id="vid" className="border-white border-solid " >
         <video
           ref={videoRef}
-
+    muted
           playsInline
           autoPlay
           className="w-[20vh] h-[30vh] bg-black absolute right-0 "
