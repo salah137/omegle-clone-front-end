@@ -27,7 +27,7 @@ export default function Home() {
   // Set up Socket and Peer
   useEffect(() => {
 
-    const socketInstance = io("http://localhost:3000");
+    const socketInstance = io("https://omegle-clone-back-end.onrender.com/");
     setSocket(socketInstance);
 
     const newPeer = new Peer();
