@@ -1,115 +1,117 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-// ES modules
 import { io } from "socket.io-client";
 import Peer from "peerjs";
 import Image from "next/image";
-import img from "./assets/images.webp"
-// CommonJS
+import img from "./assets/images.webp";
+
 export default function Home() {
-  const [socket, setSocket] = useState<any>();
-  const [stream, setStream] = useState<MediaStream>();
-  const videoRef = useRef<HTMLVideoElement>(null); // Use a ref to directly access the video element
+  const [socket, setSocket] = useState<any>(null);
+  const [peer, setPeer] = useState<Peer | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [otherId, setOtherId] = useState<string | null>(null);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
   const callVid = useRef<HTMLVideoElement>(null);
-  const [otherId, setOtherId] = useState<any>();
-  const [peer, setPeer] = useState<Peer>();
 
+  // Get camera/mic stream
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({
-        video: true,
-        audio: true,
-      })
-      .then((o) => {
-        console.log(("dds"));
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((localStream) => {
+      setStream(localStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = localStream;
+      }
+    });
+  }, []);
 
-        setStream(o);
-        if (videoRef.current) {
-          console.log(("dds"));
-          
-          videoRef.current.srcObject = o; 
+  // Set up Socket and Peer
+  useEffect(() => {
+
+    const socketInstance = io("http://localhost:3000");
+    setSocket(socketInstance);
+
+    const newPeer = new Peer();
+
+    newPeer.on("open", (peerId) => {
+      console.log("hhdhdhdhdhzvsdihqv");
+      
+      socketInstance.emit("register-id", peerId);
+    });
+
+    // Handle incoming call
+    newPeer.on("call", (call) => {
+      call.answer(stream!);
+      call.on("stream", (remoteStream) => {
+        if (callVid.current) {
+          callVid.current.srcObject = remoteStream;
+        }
+        setOtherId(call.peer); // Set other ID for UI
+      });
+    });
+
+    setPeer(newPeer);
+
+    socketInstance.on("found", (peerId: string) => {
+      setOtherId(peerId);
+      const call = newPeer.call(peerId, stream!);
+      call.on("stream", (remoteStream) => {
+        if (callVid.current) {
+          callVid.current.srcObject = remoteStream;
         }
       });
-  }, []);
+    });
 
-  useEffect(() => {
-    let socketE = io("https://omegle-clone-back-end.onrender.com", {
-        // Enable both WebSocket and polling
+    socketInstance.on("break", () => {
+      setOtherId(null);
+      if (callVid.current) {
+        callVid.current.srcObject = null;
+      }
     });
-    socketE.on("get-id", (id) => {
-      var peer = new Peer(`${id}`);
-      peer.on("call", function (call) {
-        call.answer(stream);
-      });
 
-      setPeer(peer);
-    });
-    socketE.on("break", () => {
-      console.log("Hi")
-      setOtherId(null)
-    });
-    setSocket(socketE);
-  }, []);
+  }, [stream]);
+
+  const handleSearch = () => {
+    if (!socket || !peer || !stream) return;
+
+    if (otherId) {
+      socket.emit("cancel", otherId);
+      setOtherId(null);
+    }
+
+    socket.emit("search");
+  };
 
   return (
     <div>
-      <div id="vid" className="border-white border-solid " >
+      <div className="border-white border-solid">
         <video
           ref={videoRef}
           muted
           playsInline
           autoPlay
-          className="w-[20vh] h-[30vh] bg-black absolute right-0 "
-        ></video>{" "}
+          className="w-[20vh] h-[30vh] bg-black absolute right-0"
+        ></video>
       </div>
 
-      {
-        otherId ?
-          <div id="vid" className="w-full h-[95vh]">
-            <video
-              ref={callVid}
+      {otherId ? (
+        <div className="w-full h-[95vh]">
+          <video
+            ref={callVid}
+            playsInline
+            autoPlay
+            className="w-full h-full bg-black"
+          ></video>
+        </div>
+      ) : (
+        <Image className="w-full h-[95vh]" src={img} width={100} alt="Waiting..." />
+      )}
 
-              playsInline
-              autoPlay
-              className="w-full h-[100%] bg-black"
-            ></video>
-          </div> : < Image className="w-full h-[95vh]" src={img} width={100} alt="dd" />
-      }
       <button
         className="w-full text-center bg-orange-600 h-[5vh]"
-        onClick={() => {
-      
-
-          console.log("dsxswx");
-
-          socket.emit("cancel", otherId);
-          setOtherId(null);
-          socket.emit("search");
-
-          socket.on("found", (id: any, myId: any) => {
-            console.log("ccx");
-
-            setOtherId(id);
-            var call = peer!.call(id, stream!);
-
-            peer!.on("call", function (call) {
-              call.answer(stream);
-            });
-
-            call.on("stream", function (othstream) {
-              if (callVid.current) {
-                callVid.current.srcObject = othstream;
-              }
-            });
-          });
-        }}
+        onClick={handleSearch}
       >
         Search
       </button>
     </div>
   );
 }
-/*
-
-
-*/
